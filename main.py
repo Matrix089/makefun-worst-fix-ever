@@ -18,21 +18,25 @@ LINE = (
 )
 
 
-def main() -> None:
-    output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-    os.makedirs(output_dir, exist_ok=True)
-    os.chmod(output_dir, 0o755)
+def validate_line(line: str) -> None:
     # The gate: UTF-8 text, 1-100 characters, a single line.
     # The line was counted at exactly 95 characters; pin that
     # so any accidental wording change fails loudly instead of silently
     # shipping a different (or over-long) entry. Commit messages
     # take no trailing period, so none is asserted here.
-    assert len(LINE) == 95, f"line is {len(LINE)} characters, expected 95"
-    assert "\n" not in LINE, "line must be a single line"
-    assert "\r" not in LINE, "line must be a single line"
-    assert 1 <= len(LINE) <= 100, f"line is {len(LINE)} characters"
-    assert LINE.strip() == LINE, "line must not have surrounding whitespace"
-    assert LINE.startswith("fix: "), "line must read like a commit message"
+    assert len(line) == 95, f"line is {len(line)} characters, expected 95"
+    assert "\n" not in line, "line must be a single line"
+    assert "\r" not in line, "line must be a single line"
+    assert 1 <= len(line) <= 100, f"line is {len(line)} characters"
+    assert line.strip() == line, "line must not have surrounding whitespace"
+    assert line.startswith("fix: "), "line must read like a commit message"
+
+
+def main() -> None:
+    output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+    os.makedirs(output_dir, exist_ok=True)
+    os.chmod(output_dir, 0o755)
+    validate_line(LINE)
     path = os.path.join(output_dir, "entry.txt")
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write(LINE)
